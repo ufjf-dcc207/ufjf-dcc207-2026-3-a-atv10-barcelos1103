@@ -1,0 +1,48 @@
+body {
+  background-color: #1a1a1a;
+  color: white;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
+.game-board {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.tubes-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.tube {
+  width: 60px;
+  height: 200px;
+  border: 4px solid #555;
+  border-top: none;
+  border-radius: 0 0 30px 30px;
+  display: flex;
+  flex-direction: column-reverse; /* Faz o índice 0 (base) ficar embaixo */
+  align-items: center;
+  justify-content: flex-start;
+  padding-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+  background-color: #333;
+}
+
+.tube.selected {
+  transform: translateY(-15px);
+  border-color: #03d1a0; /* Destaque ao selecionar */
+}
+
+.emoji-slot {
+  height: 45px;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,21 +1,24 @@
 import { useState } from 'react';
-import { TubeData } from './types';
-import { Tube } from './components/Tube';
+import type { TubeData } from './types/index'; 
+import { Tube } from './components/tube';
 import './App.css';
 
+// 3 cores (emojis), 4 de cada = 12 emojis. Capacidade do tubo = 4.
 const INITIAL_STATE: TubeData[] = [
   ['🍎', '🍌', '🍇', '🍎'],
   ['🍌', '🍇', '🍎', '🍌'],
   ['🍇', '🍎', '🍌', '🍇'],
-  []
+  [] // Tubo vazio para iniciar os movimentos
 ];
 
 function App() {
-  const [tubes, setTubes] = useState<TubeData[]>(INITIAL_STATE);
+  const [tubes, setTubes] = useState<TubeData[]>(
+    JSON.parse(JSON.stringify(INITIAL_STATE))
+  );
   const [selectedTube, setSelectedTube] = useState<number | null>(null);
 
   const handleTubeClick = (index: number) => {
-    // Se nenhum tubo está selecionado, seleciona o clicado (se não estiver vazio)
+    // 1. Se nenhum tubo está selecionado, seleciona o clicado
     if (selectedTube === null) {
       if (tubes[index].length > 0) {
         setSelectedTube(index);
@@ -23,62 +26,41 @@ function App() {
       return;
     }
 
-    // Se clicar no mesmo, deseleciona
+    // 2. Se clicar no mesmo tubo que já estava selecionado, cancela a seleção
     if (selectedTube === index) {
       setSelectedTube(null);
       return;
     }
 
-    // Tentar mover
-    const sourceTube = tubes[selectedTube];
+    const sourceIndex = selectedTube; 
+    const sourceTube = tubes[sourceIndex];
     const targetTube = tubes[index];
     const topEmojiToMove = sourceTube[sourceTube.length - 1];
     const targetTopEmoji = targetTube[targetTube.length - 1];
 
-    // Regras do jogo:
-    // 1. O tubo de destino não pode estar cheio (max 4)
-    // 2. O tubo de destino deve estar vazio OU o emoji do topo deve ser igual ao que está sendo movido
+    // 3. Regras: O destino deve ter espaço (< 4) E (estar vazio OU ter o mesmo emoji no topo)
     if (
       targetTube.length < 4 &&
       (targetTube.length === 0 || targetTopEmoji === topEmojiToMove)
     ) {
       const newTubes = [...tubes];
       
-      // Remove do original
-      const emoji = newTubes[selectedTube].pop(); 
-      // Adiciona no destino
-      if (emoji) newTubes[index].push(emoji);     
+      newTubes[sourceIndex] = [...sourceTube];
+      newTubes[index] = [...targetTube];
+
+      const emoji = newTubes[sourceIndex].pop(); 
+      if (emoji !== undefined) {
+        newTubes[index].push(emoji);
+      }
 
       setTubes(newTubes);
     }
     
-    // Sempre deseleciona após tentar um movimento
     setSelectedTube(null);
   };
 
-  return (
-    <div className="game-board">
-      <h1>Magic Emoji Sort</h1>
-      <div className="tubes-container">
-        {tubes.map((tubeData, index) => (
-          <Tube
-            key={index}
-            emojis={tubeData}
-            isSelected={selectedTube === index}
-            onClick={() => handleTubeClick(index)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ... (código anterior do App.tsx) ...
-
-  // Função para checar vitória
   const checkWin = () => {
     return tubes.every(tube => {
-      // O tubo deve estar vazio OU (estar cheio e todos os emojis serem iguais)
       if (tube.length === 0) return true;
       if (tube.length < 4) return false;
       const firstEmoji = tube[0];
@@ -86,14 +68,12 @@ function App() {
     });
   };
 
-  const isWon = checkWin();
-
   const resetGame = () => {
-    // Para simplificar, estamos apenas restaurando o state inicial estático.
-    // Em um jogo real, faríamos um "shuffle" (embaralhamento) dos emojis aqui.
-    setTubes(JSON.parse(JSON.stringify(INITIAL_STATE))); // Deep copy para reset limpo
+    setTubes(JSON.parse(JSON.stringify(INITIAL_STATE)));
     setSelectedTube(null);
   };
+
+  const isWon = checkWin();
 
   return (
     <div className="game-board">

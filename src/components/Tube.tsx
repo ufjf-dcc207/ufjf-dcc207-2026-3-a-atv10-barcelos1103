@@ -1,4 +1,4 @@
-import { TubeData } from '../types';
+import type { TubeData } from '../types/index';
 
 interface TubeProps {
   emojis: TubeData;
@@ -7,7 +7,6 @@ interface TubeProps {
 }
 
 export function Tube({ emojis, isSelected, onClick }: TubeProps) {
-  // O tubo sempre tem espaço para 4 emojis
   const capacity = 4;
   
   return (
@@ -15,9 +14,7 @@ export function Tube({ emojis, isSelected, onClick }: TubeProps) {
       className={`tube ${isSelected ? 'selected' : ''}`} 
       onClick={onClick}
     >
-      {/* Preenchemos os espaços vazios para o tubo manter o tamanho */}
-      {[...Array(capacity)].map((_, index) => {
-        // Renderizamos de baixo para cima (column-reverse no CSS)
+      {Array.from({ length: capacity }).map((_, index) => {
         const emoji = emojis[index];
         return (
           <div key={index} className="emoji-slot">

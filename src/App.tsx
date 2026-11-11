@@ -73,4 +73,54 @@ function App() {
   );
 }
 
+// ... (código anterior do App.tsx) ...
+
+  // Função para checar vitória
+  const checkWin = () => {
+    return tubes.every(tube => {
+      // O tubo deve estar vazio OU (estar cheio e todos os emojis serem iguais)
+      if (tube.length === 0) return true;
+      if (tube.length < 4) return false;
+      const firstEmoji = tube[0];
+      return tube.every(emoji => emoji === firstEmoji);
+    });
+  };
+
+  const isWon = checkWin();
+
+  const resetGame = () => {
+    // Para simplificar, estamos apenas restaurando o state inicial estático.
+    // Em um jogo real, faríamos um "shuffle" (embaralhamento) dos emojis aqui.
+    setTubes(JSON.parse(JSON.stringify(INITIAL_STATE))); // Deep copy para reset limpo
+    setSelectedTube(null);
+  };
+
+  return (
+    <div className="game-board">
+      <h1>Magic Emoji Sort</h1>
+      
+      {isWon && (
+        <div className="victory-message">
+          <h2>🎉 Você Venceu! 🎉</h2>
+        </div>
+      )}
+
+      <div className="tubes-container">
+        {tubes.map((tubeData, index) => (
+          <Tube
+            key={index}
+            emojis={tubeData}
+            isSelected={selectedTube === index}
+            onClick={() => handleTubeClick(index)}
+          />
+        ))}
+      </div>
+
+      <button className="reset-button" onClick={resetGame}>
+        Reiniciar Jogo
+      </button>
+    </div>
+  );
+}
+
 export default App;
